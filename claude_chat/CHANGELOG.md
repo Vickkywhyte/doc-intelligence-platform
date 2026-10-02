@@ -114,10 +114,21 @@ Entries are prepended (newest first).
 - **Cost incurred:** ~$0.30 across all smoke + full runs during Phase 8.
 
 ### Phase 9 — Experiment Matrix & Reporting
-*(entry to be added)*
+**2026-10-02 — Completed**
+- **Deliverables:** `src/docintel/pipeline/experiment.py` (328 lines, run_matrix + MatrixResult + MatrixConfigEntry), `src/docintel/evaluation/report.py` (516 lines, generate_report + ReportPaths + 3 plotly figure builders), `src/docintel/evaluation/stats.py` (extended with bootstrap_ci_for_metric + ci_half_width; existing bootstrap_ci untouched), `scripts/07_run_eval_matrix.py`, `scripts/08_generate_report.py`, `tests/test_report.py` (24 tests), `tests/test_stats.py` (17 tests), `tests/fixtures/synthetic_matrix/` (matrix.json + 6 EvalResult fixture JSONs); Makefile targets: eval-matrix, report, eval-matrix-report; `pyproject.toml`: added plotly>=5.20, kaleido>=0.2
+- **Checkpoint:** `make eval-matrix-report` passed. All 6 configs (3 chunking × 2 embedding per ADR-015) evaluated successfully. Report at `results/reports/20261002T111815_matrix.{md,csv}` + 3 PNG figures. 317 tests passing (41 new).
+- **Results:** fix·bge acc=0.910 halluc=0.040 mrr=0.596 $/1k=$0.80; fix·mini acc=0.853 halluc=0.066 mrr=0.575 $/1k=$0.97; rec·bge acc=0.893 halluc=0.068 mrr=0.636 $/1k=$1.00; rec·mini acc=0.857 halluc=0.031 mrr=0.593 $/1k=$0.96; sem·bge acc=0.927 halluc=0.054 mrr=0.797 $/1k=$1.22; sem·mini acc=0.933 halluc=0.056 mrr=0.681 $/1k=$1.20. Winner on accuracy: sem·mini (0.933). Winner on MRR: sem·bge (0.797). Lowest hallucination: rec·mini (0.031). Cheapest: fix·bge ($0.80/1k). Semantic chunking justified the cost (+2.3 pt accuracy over best fixed config).
+- **Notes:** refusal_correctness varies 0.53–0.73 across configs (below PRD target 0.90) — known limitation, noted for Phase 11. kaleido __version__ attribute doesn't exist (cosmetic; PNG generation works). Run: ~30 min wall clock, $0.46 total cost (vs $5.00 budget).
+- **ADRs added/changed:** none
+- **Cost incurred:** $0.46
 
 ### Phase 10 — API & UI
-*(entry to be added)*
+**2026-10-02 — Completed**
+- **Deliverables:** `api/main.py` (FastAPI app, lifespan, CORS, request-ID middleware, error envelope `{"error": {"code","message","detail","request_id"}}`), `api/deps.py` (DI; `USE_HOSTED=false` → fake pipeline, `USE_HOSTED=true` → real pipeline from ChromaDB + LLMClient), `api/schemas.py` (Pydantic v2: QueryRequest, IngestResponse, EvalRunQueued, RunsListResponse, ErrorResponse), `api/routes/ingest.py` (POST /ingest multipart, all 3 chunk strategies), `api/routes/query.py` (POST /query), `api/routes/eval.py` (POST /eval/run 202 async background thread; GET /eval/runs; GET /eval/runs/{id}; GET /eval/runs/{id}/report on-demand; GET /eval/runs/{id}/figures/{name}), `ui/app.py` (Streamlit 3-tab app, sidebar with config summary, session cost, provider badge, API docs link), `ui/charts.py` (plotly helpers: make_heatmap, make_hallucination_bar, make_scatter), `ui/state.py` (session_state keys, ChatMessage dataclass, helpers), `ui/components/chat_tab.py` (Tab 1: 2-column layout, citation chips, source panel), `ui/components/eval_tab.py` (Tab 2: 6 summary cards, heatmap, bar, scatter, comparison table, drill-down), `ui/components/runs_tab.py` (Tab 3: Runs History table with open/download report/download JSON/re-run actions), `tests/test_api.py` (31 tests via FastAPI TestClient, no OpenRouter key required); `pyproject.toml` updated with fastapi>=0.115, uvicorn[standard]>=0.32, streamlit>=1.40, python-multipart>=0.0.9; Makefile `serve`, `serve-api`, `serve-ui` targets added
+- **Checkpoint:** `make serve` — FastAPI :8000 + Streamlit :8501 up; 348 tests passing (317 + 31 new API tests)
+- **Notes:** `USE_HOSTED=false` mode runs entirely without network calls — useful for CI and demo. Error envelope includes `request_id` for log correlation. Eval runs are queued to a background thread (202 response) so the API remains non-blocking during long matrix runs. `GET /eval/runs` scans `*_matrix.json` files; `GET /eval/runs/{id}/report` generates the report on demand if not already cached. Streamlit session cost tracked across tabs via `ui/state.py`.
+- **ADRs added/changed:** none
+- **Cost incurred:** $0.00
 
 ### Phase 11 — Hardening
 *(entry to be added)*

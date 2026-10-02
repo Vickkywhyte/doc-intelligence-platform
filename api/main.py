@@ -14,9 +14,12 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 import structlog
+from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+
+load_dotenv()
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 

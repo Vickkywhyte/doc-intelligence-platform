@@ -376,7 +376,7 @@ make eval-single
 
 ---
 
-## Phase 9 — Experiment Matrix & Reporting 🟡
+## Phase 9 — Experiment Matrix & Reporting 🟢
 
 **Goal:** One command → 9 configs → comparison report with charts.
 
@@ -417,7 +417,7 @@ cost printed. Runtime < 30 min warm-cache.
 
 ---
 
-## Phase 10 — API & UI ⚪
+## Phase 10 — API & UI 🟢
 
 **Goal:** FastAPI endpoints + Streamlit 3-tab app.
 

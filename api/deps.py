@@ -12,6 +12,9 @@ from functools import lru_cache
 from pathlib import Path
 
 import structlog
+from dotenv import load_dotenv
+
+load_dotenv()
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
@@ -100,8 +103,8 @@ def _build_real_pipeline():
     """Build a pipeline from the real config (requires indexes + API key)."""
     from docintel.embeddings.registry import get_embedder
     from docintel.pipeline.rag_pipeline import RAGPipeline
-    from docintel.retrieval.retriever import Retriever
-    from docintel.generation.llm_client import LLMClient
+    from docintel.retrieval.retriever import DenseRetriever
+    from docintel.generation.llm_client import OpenRouterClient
     from docintel.vectorstore.chroma_store import ChromaStore
 
     cfg = get_config()
@@ -110,9 +113,8 @@ def _build_real_pipeline():
     emb_cfg = cfg.embeddings[0]
     gen_cfg = cfg.generation
 
-    index_dir = Path(f"data/indexes/{chunk_cfg.name}_{emb_cfg.name}")
-    store = ChromaStore(index_dir)
+    store = ChromaStore(chunk_cfg.name, emb_cfg.name)
     embedder = get_embedder(emb_cfg)
-    retriever = Retriever(store, embedder=embedder)
-    llm = LLMClient(model=gen_cfg.model, temperature=gen_cfg.temperature)
+    retriever = DenseRetriever(store, embedder, cfg.retrieval)
+    llm = OpenRouterClient(gen_cfg)
     return RAGPipeline(retriever, llm, k=cfg.retrieval.k)
