@@ -100,15 +100,15 @@ class HallucinationMetric(Metric):
             log.warning("hallucination_zero_claims", item_id=item.id)
             return {"hallucination_rate": 0.0}
 
-        # Step 2: Entailment check per claim
+        # Step 2: Batch entailment check (single LLM call for all claims)
         chunk_context = [
             (r.chunk.chunk_id, r.chunk.text) for r in response.retrieved
         ]
         verdicts: list[str] = []
         hallucinated: list[str] = []
 
-        for claim in claims:
-            result = self._judge.check_entailment(claim, chunk_context)
+        results = self._judge.batch_check_entailment(claims, chunk_context)
+        for claim, result in zip(claims, results):
             verdict = result.get("verdict", "no")
             verdicts.append(verdict)
             if verdict == "no":

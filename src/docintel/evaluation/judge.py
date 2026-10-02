@@ -46,6 +46,11 @@ class JudgeClient:
             if path.exists():
                 self._prompts[name] = path.read_text()
 
+        # entailment_v2 is always loaded for batched calls (independent of config version)
+        v2_path = _PROMPT_DIR / "entailment_v2.txt"
+        if v2_path.exists():
+            self._prompts["entailment_v2"] = v2_path.read_text()
+
     # ── Public API ────────────────────────────────────────────────────────────
 
     def judge_correctness(
@@ -89,6 +94,47 @@ class JudgeClient:
         if verdict not in ("yes", "partial", "no"):
             verdict = "no"
         return {"verdict": verdict, "chunk_id": result.get("chunk_id")}
+
+    def batch_check_entailment(
+        self,
+        claims: list[str],
+        chunks: list[tuple[str, str]],
+    ) -> list[dict]:
+        """Check all claims against all chunks in a single LLM call (entailment_v2).
+
+        Args:
+            claims: Atomic claims to check.
+            chunks: List of (chunk_id, text) pairs.
+
+        Returns:
+            List of {"verdict": "yes|partial|no", "chunk_id": str|None},
+            one entry per claim in the same order.  Falls back to per-claim
+            check_entailment() calls if entailment_v2 is not loaded.
+        """
+        if not claims:
+            return []
+
+        if "entailment_v2" not in self._prompts:
+            # Graceful fallback to v1 per-claim calls
+            return [self.check_entailment(c, chunks) for c in claims]
+
+        claims_text = "\n".join(f"{i}. {c}" for i, c in enumerate(claims))
+        chunks_text = "\n".join(f"[{cid}] {text}" for cid, text in chunks)
+        prompt = self._prompts["entailment_v2"].format(
+            claims=claims_text, chunks=chunks_text
+        )
+        result = self._cached_call("entailment_v2", prompt)
+
+        entries = result.get("results", []) if isinstance(result, dict) else []
+        out: list[dict] = [{"verdict": "no", "chunk_id": None} for _ in claims]
+        for entry in entries:
+            idx = entry.get("claim_index")
+            if isinstance(idx, int) and 0 <= idx < len(claims):
+                verdict = entry.get("verdict", "no")
+                if verdict not in ("yes", "partial", "no"):
+                    verdict = "no"
+                out[idx] = {"verdict": verdict, "chunk_id": entry.get("chunk_id")}
+        return out
 
     # ── Internal ──────────────────────────────────────────────────────────────
 

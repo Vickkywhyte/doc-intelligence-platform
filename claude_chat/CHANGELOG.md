@@ -79,7 +79,31 @@ Entries are prepended (newest first).
 - **Cost incurred:** ~$0.0072 (rewrite LLM calls only)
 
 ### Phase 8 — Evaluation Metrics
-*(entry to be added)*
+
+#### 2026-10-02 — Post-run fixes (refusal, latency, cost attribution)
+
+**Bug 1: Refusal detection — root cause both (a) and (b)**
+- **Root cause (a) — prompt too loose:** System prompt said "not enough information" — LLM interpreted topical relevance as sufficient. 4/15 unanswerable items answered with hallucinated facts (e.g. "parental leave is 12 weeks").
+- **Root cause (b) — REFUSAL_PHRASES too narrow:** LLM hedged with "not explicitly stated", "does not specify", "not explicitly detailed" — none matched. 9/15 unanswerable items hedged without triggering detection.
+- **Root cause (b cont.) — SCORE_FLOOR=0.0:** Condition-2 (zero citations + low scores) never fired because every retrieved chunk scores > 0.
+- **Fix:** Added explicit REFUSAL RULE paragraph to SYSTEM_PROMPT. Added 9 hedging patterns to REFUSAL_PHRASES. Raised SCORE_FLOOR from 0.0 → 0.35.
+- **Files:** `src/docintel/generation/prompt_templates.py`
+- **Test:** `TestRefusalDetectionRegression` (7 tests) added to `tests/test_metrics.py`
+
+**Bug 2: Entailment latency — batched to 1 call per question**
+- **Root cause:** Per-claim entailment loop: N claims × M chunks = N LLM calls/question. 3 claims × 5 chunks → 3 calls = ~4.5s just for entailment per question.
+- **Fix:** New `entailment_v2.txt` prompt + `JudgeClient.batch_check_entailment()` — all claims in one call. Both `HallucinationMetric` and `FaithfulnessMetric` updated.
+- **Files:** `src/docintel/evaluation/judge_prompts/entailment_v2.txt` (NEW, PINNED), `src/docintel/evaluation/judge.py`, `src/docintel/evaluation/metrics/hallucination.py`, `src/docintel/evaluation/metrics/faithfulness.py`
+
+**Bug 3: Per-question cost only included generation, not judge calls**
+- **Fix:** `Evaluator._eval_one()` now snapshots `cost_tracker.run_total` before and after — delta covers all LLM calls (generation + all judge calls). Verified: `sum(per_question.cost_usd) == total_cost_usd` exactly.
+- **Files:** `src/docintel/evaluation/evaluator.py`
+
+**Integration test added**
+- `tests/test_eval_integration.py` — 6 items (3 factual, 2 multi_hop, 1 unanswerable) through full evaluator with fake components. Asserts: all aggregate keys present, all values in [0,1], refusal_correctness=1.0, per-question cost sums to total. `@pytest.mark.integration`.
+
+**Smoke-eval script added**
+- `scripts/09_smoke_eval.py` — real pipeline, 6 items, ~$0.02. PASS/FAIL thresholds: `refusal_correctness >= 0.85`, `hallucination_rate <= 0.15`, `latency_ms_p50 <= 8000`. `make smoke-eval`.
 
 ### Phase 9 — Experiment Matrix & Reporting
 *(entry to be added)*

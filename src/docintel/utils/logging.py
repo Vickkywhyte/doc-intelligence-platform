@@ -39,10 +39,14 @@ def configure_logging(
     # Remove any pre-existing handlers to avoid duplicate output on re-call.
     root.handlers.clear()
 
-    fmt = logging.Formatter("%(message)s")
+    # ProcessorFormatter handles both structlog events and plain stdlib records,
+    # producing one JSON object per line on both stdout and the rotating file.
+    json_formatter = structlog.stdlib.ProcessorFormatter(
+        processor=structlog.processors.JSONRenderer(),
+    )
 
     stream_handler = logging.StreamHandler()
-    stream_handler.setFormatter(fmt)
+    stream_handler.setFormatter(json_formatter)
     root.addHandler(stream_handler)
 
     # 10 MB × 5 rotated files per OBSERVABILITY.md §2.4
@@ -52,19 +56,24 @@ def configure_logging(
         backupCount=5,
         encoding="utf-8",
     )
-    file_handler.setFormatter(fmt)
+    file_handler.setFormatter(json_formatter)
     root.addHandler(file_handler)
 
     structlog.configure(
         processors=[
             structlog.contextvars.merge_contextvars,
-            structlog.processors.add_log_level,
+            structlog.stdlib.add_log_level,
             structlog.processors.TimeStamper(fmt="iso", utc=True),
             structlog.processors.StackInfoRenderer(),
             structlog.processors.format_exc_info,
-            structlog.processors.JSONRenderer(),
+            # Hands the event dict to ProcessorFormatter on each stdlib handler.
+            structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
         ],
         wrapper_class=structlog.make_filtering_bound_logger(log_level),
-        logger_factory=structlog.PrintLoggerFactory(),
+        logger_factory=structlog.stdlib.LoggerFactory(),
         cache_logger_on_first_use=True,
     )
+
+    # Suppress chatty third-party libs from flooding the log file.
+    for noisy in ("httpx", "httpcore", "pikepdf", "spacy"):
+        logging.getLogger(noisy).setLevel(logging.WARNING)

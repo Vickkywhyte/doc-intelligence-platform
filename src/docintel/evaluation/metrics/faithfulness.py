@@ -84,10 +84,9 @@ class FaithfulnessMetric(Metric):
         chunk_context = [
             (r.chunk.chunk_id, r.chunk.text) for r in response.retrieved
         ]
-        verdicts: list[str] = []
-        for claim in claims:
-            result = self._judge.check_entailment(claim, chunk_context)
-            verdicts.append(result.get("verdict", "no"))
+        # Single batched LLM call for all claims (entailment_v2)
+        results = self._judge.batch_check_entailment(claims, chunk_context)
+        verdicts = [r.get("verdict", "no") for r in results]
 
         self.last_verdicts = verdicts
         return {"faithfulness": _faithfulness_score(verdicts)}

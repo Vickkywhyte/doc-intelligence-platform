@@ -1,4 +1,4 @@
-.PHONY: help install check-config corpus ingest test clean clean-cache index query-smoke rag-smoke golden-seed golden-validate golden-rewrite golden-dedupe eval-single test-metrics
+.PHONY: help install check-config corpus ingest test clean clean-cache index query-smoke rag-smoke golden-seed golden-validate golden-rewrite golden-dedupe eval-single test-metrics smoke-eval
 
 CONFIG ?= configs/experiment_matrix.yaml
 PYTHON  ?= python3.11
@@ -79,6 +79,9 @@ eval-single: ## Run one-config evaluation over the full golden set → results/r
 
 test-metrics: ## Run only metric unit tests (fast, no LLM)
 	pytest tests/test_metrics.py -v
+
+smoke-eval: ## Smoke-test pipeline on 6 golden items (~$0.02, needs real indexes)
+	$(PYTHON) scripts/09_smoke_eval.py --config $(CONFIG)
 
 eval-matrix:
 	@echo "Phase 9: not yet implemented"

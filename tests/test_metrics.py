@@ -333,7 +333,7 @@ class TestFaithfulnessScore:
 class TestHallucinationMetric:
     def test_clean_answer(self):
         claims_resp = '{"claims": ["Notice is 30 days."]}'
-        entail_resp = '{"verdict": "yes", "chunk_id": "doc:1:00000"}'
+        entail_resp = '{"results": [{"claim_index": 0, "verdict": "yes", "chunk_id": "doc:1:00000"}]}'
         judge = _make_judge([claims_resp, entail_resp])
         cfg = _eval_cfg()
         metric = HallucinationMetric(judge, cfg)
@@ -346,7 +346,7 @@ class TestHallucinationMetric:
 
     def test_fabricated_claim(self):
         claims_resp = '{"claims": ["Notice is 60 days."]}'
-        entail_resp = '{"verdict": "no", "chunk_id": null}'
+        entail_resp = '{"results": [{"claim_index": 0, "verdict": "no", "chunk_id": null}]}'
         judge = _make_judge([claims_resp, entail_resp])
         cfg = _eval_cfg()
         metric = HallucinationMetric(judge, cfg)
@@ -380,7 +380,7 @@ class TestHallucinationMetric:
 
     def test_partial_claim(self):
         claims_resp = '{"claims": ["Notice is 30 days, effective immediately."]}'
-        entail_resp = '{"verdict": "partial", "chunk_id": "doc:1:00000"}'
+        entail_resp = '{"results": [{"claim_index": 0, "verdict": "partial", "chunk_id": "doc:1:00000"}]}'
         judge = _make_judge([claims_resp, entail_resp])
         cfg = _eval_cfg(partial_claim_weight=0.5)
         metric = HallucinationMetric(judge, cfg)
@@ -397,7 +397,7 @@ class TestHallucinationMetric:
 class TestFaithfulnessMetric:
     def test_paraphrase_is_fully_faithful(self):
         claims_resp = '{"claims": ["Either side can end the deal with a month notice."]}'
-        entail_resp = '{"verdict": "yes", "chunk_id": "doc:1:00000"}'
+        entail_resp = '{"results": [{"claim_index": 0, "verdict": "yes", "chunk_id": "doc:1:00000"}]}'
         judge = _make_judge([claims_resp, entail_resp])
         metric = FaithfulnessMetric(judge)
 
@@ -411,12 +411,9 @@ class TestFaithfulnessMetric:
 
     def test_unsupported_extra(self):
         claims_resp = '{"claims": ["Notice is 30 days.", "Payment is due on signing."]}'
-        # Two entailment calls: first yes, second no
-        judge = _make_judge([
-            claims_resp,
-            '{"verdict": "yes", "chunk_id": "doc:1:00000"}',
-            '{"verdict": "no", "chunk_id": null}',
-        ])
+        # Single batched call (v2): both claims in one response
+        entail_resp = '{"results": [{"claim_index": 0, "verdict": "yes", "chunk_id": "doc:1:00000"}, {"claim_index": 1, "verdict": "no", "chunk_id": null}]}'
+        judge = _make_judge([claims_resp, entail_resp])
         metric = FaithfulnessMetric(judge)
 
         item = _make_golden()
@@ -599,3 +596,64 @@ class TestJudgeCache:
         # j2 uses same cache dir — should find the cached result
         j2.judge_correctness("What?", "Gold ans.", "Gen ans.")
         assert llm.call_count == 1
+
+
+# ── Refusal detection regression (Phase 8 post-mortem) ───────────────────────
+
+
+class TestRefusalDetectionRegression:
+    """Regression tests for is_refusal() against answers observed in the Phase 8 run.
+
+    Root cause: 13/15 unanswerable items were not detected as refused.
+    Two sub-problems:
+      (a) LLM hedged with phrases not in REFUSAL_PHRASES ("not explicitly stated" etc.)
+      (b) SCORE_FLOOR was 0.0, so condition-2 never fired even with no citations.
+    """
+
+    def _rc(self, score: float = 0.9) -> list:
+        """Return a list with one fake RetrievedChunk with the given score."""
+        chunk = _make_chunk("doc1:fixed:00001")
+        return [RetrievedChunk(chunk=chunk, score=score, rank=1, retriever="topk")]
+
+    def test_canonical_refusal_phrase_still_detected(self):
+        from docintel.generation.prompt_templates import is_refusal
+        ans = "I don't know based on the provided documents."
+        assert is_refusal(ans, [], self._rc()) is True
+
+    def test_hedged_not_explicitly_stated(self):
+        from docintel.generation.prompt_templates import is_refusal
+        # g071 / g075 pattern
+        ans = "The required backup frequency is not explicitly stated in the provided excerpts."
+        assert is_refusal(ans, [], self._rc()) is True
+
+    def test_hedged_does_not_specify(self):
+        from docintel.generation.prompt_templates import is_refusal
+        # g064 / g065 / g074 pattern
+        ans = "The provided text does not specify the overtime pay rates for hourly employees."
+        assert is_refusal(ans, [], self._rc()) is True
+
+    def test_hedged_not_explicitly_detailed(self):
+        from docintel.generation.prompt_templates import is_refusal
+        # g062 / g073 pattern
+        ans = "The annual bonus structure is not explicitly detailed in the provided documents."
+        assert is_refusal(ans, [], self._rc()) is True
+
+    def test_hedged_does_not_explicitly_list(self):
+        from docintel.generation.prompt_templates import is_refusal
+        # g066 pattern
+        ans = "The provided text does not explicitly list any approved cloud storage services."
+        assert is_refusal(ans, [], self._rc()) is True
+
+    def test_no_citations_low_score_triggers_condition2(self):
+        from docintel.generation.prompt_templates import SCORE_FLOOR, is_refusal
+        # Zero citations and all scores below SCORE_FLOOR → refusal
+        low_chunks = self._rc(score=SCORE_FLOOR - 0.01)
+        ans = "The parental leave is 12 weeks."  # hallucinated answer, no phrase
+        assert is_refusal(ans, [], low_chunks) is True
+
+    def test_cited_answer_is_not_refusal(self):
+        from docintel.generation.prompt_templates import is_refusal
+        # A proper cited answer should not be flagged as a refusal
+        citations = [Citation(doc_id="doc1", page=1, chunk_id="doc1:fixed:00001")]
+        ans = "The notice period is 30 days [doc1:1:doc1:fixed:00001]."
+        assert is_refusal(ans, citations, self._rc()) is False

@@ -34,7 +34,14 @@ Example answer (showing correct inline citation usage):
 [abc123:2:abc123def456:fixed:00003]. Late payments accrue interest at 1.5% \
 per month [abc123:2:abc123def456:fixed:00003].
 
-If the CHUNKS do not contain enough information to answer, respond with this \
+REFUSAL RULE: Before answering, check whether the CHUNKS explicitly state \
+the specific fact the question asks for. Topical relevance is NOT the same \
+as answering. If the chunks discuss the topic but do not contain the precise \
+answer, you MUST refuse. If you cannot directly quote or closely paraphrase \
+the answer FROM the chunks, you MUST refuse. Do not infer, generalise, or \
+use outside knowledge to fill gaps.
+
+If the CHUNKS do not explicitly contain the answer, respond with this \
 exact phrase and nothing else:
   "I don't know based on the provided documents."
 
@@ -57,12 +64,24 @@ REFUSAL_PHRASES: list[str] = [
     "no information about",
     "the documents do not contain",
     "the provided documents do not",
+    # Hedged patterns observed in Phase 8 evaluation run
+    "not explicitly stated",
+    "not explicitly detailed",
+    "does not specify",
+    "does not explicitly",
+    "not detailed in the provided",
+    "not specified in the provided",
+    "cannot be determined from",
+    "not included in the provided",
+    "not explicitly mentioned",
 ]
 
 # Minimum score a retrieved chunk must exceed for condition-2 refusal check.
 # A response with zero citations AND no retrieved chunk above this floor is
 # treated as a refusal even if the LLM didn't use an explicit phrase.
-SCORE_FLOOR: float = 0.0
+# Set to 0.35: unanswerable questions retrieve topically-related but not
+# specifically-answering chunks, which tend to score below this threshold.
+SCORE_FLOOR: float = 0.35
 
 
 # ── Prompt builders ───────────────────────────────────────────────────────────

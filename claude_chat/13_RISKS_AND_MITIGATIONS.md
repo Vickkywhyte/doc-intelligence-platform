@@ -28,6 +28,7 @@ a phase where it's addressed. Update status as phases complete.
 | R13 | OpenRouter rate limits or outages | Medium | Medium | 🟡 | Retry with backoff; support direct OpenAI/Anthropic as fallback | 4, 6 |
 | R14 | Local model download fails in restricted env | Low | Medium | 🟡 | Document; support `HF_HUB_OFFLINE=1` with pre-cached models | 4 |
 | R15 | Docker build time exceeds 15 min | Medium | Low | 🟡 | Multi-stage build; CPU-only torch; document as known caveat | 11 |
+| R16 | `logs/app.jsonl` contains third-party plaintext but no structlog JSON events | High | Low | 🟡 | Deferred to Phase 11. Root cause: `logging.py` uses PrintLoggerFactory which bypasses stdlib root logger's RotatingFileHandler. Third-party libs (pikepdf, spacy, httpx) write plaintext into a file that should be JSONL. Interim workaround: pipe eval runs through `tee` to capture stdout to a permanent file. | 11 |
 
 ---
 
@@ -301,6 +302,36 @@ build takes 20+ minutes; CI times out.
   required for v1.
 
 **Residual risk:** Low; documented.
+
+---
+
+### R16 — logs/app.jsonl missing structlog events
+
+**What could go wrong:** `logs/app.jsonl` is supposed to be the structured
+JSONL trace per `claude_chat/10_OBSERVABILITY.md §2.4`. In practice it
+contains zero JSON objects — only plaintext from pikepdf, spacy, and httpx.
+
+**Root cause:** `src/docintel/utils/logging.py` configures structlog with
+`PrintLoggerFactory`, which writes directly to stdout via `print()` and
+never touches stdlib logging. The `RotatingFileHandler` attached to stdlib's
+root logger therefore never sees structlog events — only third-party plaintext
+that goes through stdlib.
+
+**Mitigation (Phase 11):** Rewire logging so structlog routes through
+stdlib:
+- Use `structlog.stdlib.LoggerFactory()`
+- Use `structlog.stdlib.ProcessorFormatter.wrap_for_formatter` in the
+  processor chain
+- Attach `RotatingFileHandler` to stdlib root with
+  `ProcessorFormatter(processor=JSONRenderer())`
+- Set httpx/httpcore/pikepdf/spacy loggers to WARNING
+- Verify: `grep -c '{' logs/app.jsonl` returns > 0 after one log call
+
+**Interim workaround (Phase 8/9/10):** Pipe eval runs through `tee`:
+`python -m docintel.evaluation.evaluator ... 2>&1 | tee /tmp/eval_logs/run.log`
+
+**Residual risk:** Low. Stdout logging works; EvalResult JSON on disk is
+the primary artifact. Blast radius is limited to log-file-based debugging.
 
 ---
 

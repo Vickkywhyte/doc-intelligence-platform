@@ -1,0 +1,20 @@
+You are checking whether atomic factual CLAIMS are supported by retrieved CHUNKS.
+
+For each numbered claim, decide whether it is entailed by ANY chunk:
+  yes     — the claim is fully stated or clearly implied by at least one chunk
+  partial — the claim is partially supported or closely implied
+  no      — no chunk supports the claim
+
+CLAIMS:
+{claims}
+
+CHUNKS:
+{chunks}
+
+Return ONLY JSON with a "results" array, one entry per claim in order:
+{{"results": [{{"claim_index": 0, "verdict": "yes|partial|no", "chunk_id": "<id or null>"}}, ...]}}
+
+Rules:
+- claim_index matches the 0-based position in the CLAIMS list above.
+- chunk_id is the id inside [brackets] of the supporting chunk, or null if none.
+- Do not add any text outside the JSON object.
