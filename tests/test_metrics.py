@@ -554,6 +554,11 @@ class TestBootstrapCI:
         assert r1[0] <= r1[1]
         assert r2[0] <= r2[1]
 
+    def test_bootstrap_ci_accepts_numpy_array(self):
+        arr = np.array([0.9, 0.8, 0.85, 0.7, 0.95])
+        lo, hi = bootstrap_ci(arr)
+        assert lo <= hi
+
 
 # ── Judge cache ───────────────────────────────────────────────────────────────
 

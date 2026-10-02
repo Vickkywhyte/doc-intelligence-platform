@@ -24,7 +24,7 @@ def bootstrap_ci(
         (lo, hi) — the lower and upper bound of the CI.
         Returns (0.0, 0.0) when *scores* is empty.
     """
-    if not scores:
+    if scores is None or len(scores) == 0:
         return (0.0, 0.0)
 
     arr = np.array(scores, dtype=float)

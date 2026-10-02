@@ -153,6 +153,7 @@ class Evaluator:
     def _eval_one(self, item: GoldenItem) -> QuestionResult:
         log.debug("eval_question_start", item_id=item.id, type=item.type)
         t0 = time.monotonic()
+        cost_before = cost_tracker.run_total
 
         response: RAGResponse = self._pipeline.query(item.question)
 
@@ -180,6 +181,7 @@ class Evaluator:
             judge_verdict["warning"] = self._hallucination_m.last_warning
 
         total_latency_ms = round((time.monotonic() - t0) * 1000)
+        question_cost = cost_tracker.run_total - cost_before
 
         return QuestionResult(
             item_id=item.id,
@@ -190,7 +192,7 @@ class Evaluator:
             metrics=scores,
             hallucinated_claims=hallucinated_claims,
             judge_verdict=judge_verdict,
-            cost_usd=response.cost_usd,
+            cost_usd=question_cost,
             latency_ms=total_latency_ms,
         )
 

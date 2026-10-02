@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
@@ -26,3 +26,20 @@ class GoldenItem(BaseModel):
     )
     type: Literal["factual", "multi_hop", "unanswerable"]
     notes: str = Field(default="", description="Curation notes; not used in scoring")
+
+
+class QuestionResult(BaseModel):
+    """Per-question evaluation result stored inside EvalResult.per_question."""
+
+    model_config = {"extra": "ignore"}
+
+    item_id: str
+    question: str
+    answer: str
+    refused: bool = False
+    retrieved_chunk_ids: list[str] = Field(default_factory=list)
+    metrics: dict[str, float] = Field(default_factory=dict)
+    hallucinated_claims: list[str] = Field(default_factory=list)
+    judge_verdict: dict[str, Any] = Field(default_factory=dict)
+    cost_usd: float = 0.0
+    latency_ms: int = 0
