@@ -25,6 +25,10 @@ dependencies = [
     "openai>=1.40",
     "plotly>=5.20",
     "kaleido>=0.2",
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "streamlit>=1.40",
+    "python-multipart>=0.0.9",
 ]
 
 [project.optional-dependencies]

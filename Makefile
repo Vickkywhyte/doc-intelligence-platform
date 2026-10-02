@@ -1,4 +1,4 @@
-.PHONY: help install check-config corpus ingest test clean clean-cache index query-smoke rag-smoke golden-seed golden-validate golden-rewrite golden-dedupe eval-single test-metrics smoke-eval
+.PHONY: help install check-config corpus ingest test clean clean-cache index query-smoke rag-smoke golden-seed golden-validate golden-rewrite golden-dedupe eval-single test-metrics smoke-eval eval-matrix report eval-matrix-report serve serve-api serve-ui
 
 CONFIG ?= configs/experiment_matrix.yaml
 PYTHON  ?= python3.11
@@ -93,5 +93,15 @@ report: ## Generate Markdown + CSV + PNG report from newest matrix result
 
 eval-matrix-report: eval-matrix report ## Run matrix then immediately generate report
 
-serve:
-	@echo "Phase 10: not yet implemented"
+serve: ## Start both FastAPI (:8000) and Streamlit (:8501) in parallel
+	@echo "Starting API on :8000 and UI on :8501 …"
+	@trap 'kill 0' EXIT; \
+	  uvicorn api.main:app --reload --port 8000 & \
+	  streamlit run ui/app.py --server.port 8501 & \
+	  wait
+
+serve-api: ## Start only the FastAPI server on :8000
+	uvicorn api.main:app --reload --port 8000
+
+serve-ui: ## Start only the Streamlit UI on :8501
+	streamlit run ui/app.py --server.port 8501
