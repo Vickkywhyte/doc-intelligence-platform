@@ -145,6 +145,17 @@ Entries are prepended (newest first).
 - **ADRs added/changed:** none
 - **Cost incurred:** $0.00
 
+#### 2026-10-02 — Phase 11B (Documentation & Git Hygiene) complete
+
+- **Deliverables:**
+  - `README.md`: full rewrite — real matrix results table (6 configs, bold best-in-column), architecture diagram from `02_ARCHITECTURE.md`, Docker quick start, eval pipeline explainer, 30-second pitch, project structure tree.
+  - `docs/`: directory created with `.gitkeep`; screenshots to be added manually.
+  - `.gitignore` audit: all 14 required patterns confirmed present (`*.py[cod]` covers `*.pyc` via glob).
+- **Checkpoint:** `git ls-files` → 145 tracked files. `git status --short` clean (no untracked noise). README uses real numbers from `results/reports/20261002T111815_matrix.md`.
+- **Notes:** Phase 11 now complete. Project is in a shippable state: 378 tests passing, Dockerfile + docker-compose finalized, README with real benchmark results.
+- **ADRs added/changed:** none
+- **Cost incurred:** $0.00
+
 ---
 
 ## Entry template
