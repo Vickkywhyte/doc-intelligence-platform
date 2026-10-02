@@ -131,7 +131,19 @@ Entries are prepended (newest first).
 - **Cost incurred:** $0.00
 
 ### Phase 11 — Hardening
-*(entry to be added)*
+#### 2026-10-02 — Phase 11A (Hardening) complete
+
+- **Deliverables:**
+  - `src/docintel/utils/logging.py` (R16 fix): structlog now fans out to stdout AND `logs/app.jsonl` (rotating 10 MB × 5 files), JSONL format; added `get_logger()` public helper; kaleido added to noisy-logger suppression list.
+  - `Dockerfile`: multi-stage build (builder: python:3.11-slim + build-essential; runtime: poppler-utils + tesseract-ocr + curl + CPU-only torch wheels). Exposes 8000/8501. CMD: `uvicorn api.main:app`.
+  - `docker-compose.yml`: finalized from Phase 1 stub — `api` service (port 8000, `/health` healthcheck), `ui` service (port 8501, `depends_on: api: condition: service_healthy`), `data/results/logs` bind-mounts, `env_file: .env`, named `hf_cache` volume.
+  - `tests/test_pipeline_integration.py`: 5 end-to-end pipeline tests using `FakeLLMClient` + `FakeVectorStore` (no network). Tests cover: response shape, retrieval presence, non-refusal, citation parsing, refusal detection. All marked `@pytest.mark.integration`.
+  - `ui/components/eval_tab.py` + `ui/components/runs_tab.py`: replaced deprecated `use_container_width=True` with `width="stretch"` (7 occurrences in eval_tab, 2 in runs_tab).
+  - `Makefile`: added `docker-build` target.
+- **Checkpoint:** `pytest -q` → 378 passed (+5 integration tests, up from 373). R16 verify: `logs/app.jsonl` contains valid JSON with `event=verify_event`. `docker compose config` → valid. `docker build` not run (takes 8–15 min; user to verify on clean clone).
+- **Notes:** CPU-only torch keeps the image lean — avoids CUDA deps for a CPU-only deployment target. `FakeLLMClient` + `FakeVectorStore` in integration tests mean CI never requires an OpenRouter key or a running Chroma instance. Streamlit deprecated `use_container_width` in 1.40; `width="stretch"` is the drop-in replacement.
+- **ADRs added/changed:** none
+- **Cost incurred:** $0.00
 
 ---
 

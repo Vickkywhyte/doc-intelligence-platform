@@ -1,29 +1,41 @@
-# Stub — finalized in Phase 11.
-# Uncomment and extend when Phase 10/11 are active.
-
-version: "3.9"
-
 services:
   api:
     build: .
-    # image: docintel-api
     ports:
       - "8000:8000"
     env_file: .env
+    environment:
+      - PYTHONPATH=/app
     volumes:
       - ./data:/app/data
       - ./configs:/app/configs
       - ./logs:/app/logs
       - ./results:/app/results
-    # command: uvicorn api.main:app --host 0.0.0.0 --port 8000
+      - hf_cache:/root/.cache/huggingface
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   ui:
     build: .
     ports:
       - "8501:8501"
     env_file: .env
+    environment:
+      - PYTHONPATH=/app
+      - API_BASE=http://api:8000
     volumes:
       - ./data:/app/data
       - ./configs:/app/configs
       - ./results:/app/results
-    # command: streamlit run ui/app.py --server.port 8501 --server.address 0.0.0.0
+    command: streamlit run ui/app.py --server.port 8501 --server.address 0.0.0.0
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  hf_cache:

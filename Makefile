@@ -1,4 +1,4 @@
-.PHONY: help install check-config corpus ingest test clean clean-cache index query-smoke rag-smoke golden-seed golden-validate golden-rewrite golden-dedupe eval-single test-metrics smoke-eval eval-matrix report eval-matrix-report serve serve-api serve-ui api-check
+.PHONY: help install check-config corpus ingest test clean clean-cache index query-smoke rag-smoke golden-seed golden-validate golden-rewrite golden-dedupe eval-single test-metrics smoke-eval eval-matrix report eval-matrix-report serve serve-api serve-ui api-check docker-build
 
 CONFIG ?= configs/experiment_matrix.yaml
 PYTHON  ?= python3.11
@@ -105,6 +105,9 @@ serve-api: ## Start only the FastAPI server on :8000
 
 serve-ui: ## Start only the Streamlit UI on :8501
 	PYTHONPATH=. streamlit run ui/app.py --server.port 8501 --server.address 0.0.0.0
+
+docker-build: ## Build Docker image tagged docintel:latest
+	docker build -t docintel:latest .
 
 api-check: ## Verify all 8 routes are registered in FastAPI (uses OpenAPI spec, not r.path)
 	$(PYTHON) -c "\

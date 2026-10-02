@@ -90,7 +90,7 @@ Read in this sequence. Each document assumes the previous ones.
 | Phase 8 — Evaluation Metrics | 🟢 Complete | 276 tests; smoke-eval all 3 thresholds PASS; refusal_correctness 0.73 (gap vs 0.90 deferred to Phase 11) |
 | Phase 9 — Experiment Matrix & Reporting | 🟢 Complete | 317 tests; 6 configs (3 chunking × 2 embedding); sem·mini best accuracy (0.933); refusal_correctness 0.53–0.73 (gap deferred to Phase 11); $0.46 cost |
 | Phase 10 — API & UI | 🟢 Complete | 348 tests; FastAPI :8000 + Streamlit :8501; 3-tab UI; 31 API tests via TestClient |
-| Phase 11 — Hardening | 🟡 In progress | Phase 11 next |
+| Phase 11 — Hardening | 🟢 Complete | 378 tests; Dockerfile + docker-compose finalized; R16 file logging verified; +5 integration tests; Streamlit deprecation fixed |
 
 Legend: 🟢 done · 🟡 in progress · ⚪ not started · 🔴 blocked
 

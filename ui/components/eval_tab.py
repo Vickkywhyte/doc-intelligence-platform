@@ -139,18 +139,18 @@ def _charts_section(entries: list[dict]) -> None:
     col1, col2 = st.columns([1, 1])
     with col1:
         fig = make_heatmap(entries, metric=selected_metric)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
         with st.expander("Heatmap data table"):
             _heatmap_table(entries, selected_metric)
 
     with col2:
         fig2 = make_hallucination_bar(entries)
-        st.plotly_chart(fig2, use_container_width=True)
+        st.plotly_chart(fig2, width="stretch")
         with st.expander("Hallucination data table"):
             _halluc_table(entries)
 
     fig3 = make_scatter(entries)
-    st.plotly_chart(fig3, use_container_width=True)
+    st.plotly_chart(fig3, width="stretch")
     with st.expander("Cost vs quality data table"):
         _scatter_table(entries)
 
@@ -176,7 +176,7 @@ def _comparison_table(entries: list[dict]) -> None:
     csv_bytes = df.to_csv(index=False).encode()
     st.download_button("Download CSV", csv_bytes, "comparison.csv", "text/csv")
 
-    st.dataframe(df, use_container_width=True)
+    st.dataframe(df, width="stretch")
 
     st.subheader("Drill-down: per-question results")
     selected_config = st.selectbox(
@@ -222,7 +222,7 @@ def _drill_down(entry: dict) -> None:
         })
 
     df = pd.DataFrame(rows)
-    st.dataframe(df, use_container_width=True)
+    st.dataframe(df, width="stretch")
 
     selected_q_id = st.selectbox(
         "Select question for detail",
@@ -253,14 +253,14 @@ def _drill_down(entry: dict) -> None:
 
 def _heatmap_table(entries: list[dict], metric: str) -> None:
     rows = [{"config": e.get("config_code"), metric: e.get("aggregate_metrics", {}).get(metric)} for e in entries]
-    st.dataframe(pd.DataFrame(rows), use_container_width=True)
+    st.dataframe(pd.DataFrame(rows), width="stretch")
 
 
 def _halluc_table(entries: list[dict]) -> None:
     rows = [{"config": e.get("config_code"), "hallucination_rate": e.get("aggregate_metrics", {}).get("hallucination_rate")} for e in sorted(entries, key=lambda e: e.get("aggregate_metrics", {}).get("hallucination_rate", 1.0))]
-    st.dataframe(pd.DataFrame(rows), use_container_width=True)
+    st.dataframe(pd.DataFrame(rows), width="stretch")
 
 
 def _scatter_table(entries: list[dict]) -> None:
     rows = [{"config": e.get("config_code"), "cost_per_1k_q_usd": e.get("aggregate_metrics", {}).get("cost_per_1k_q_usd"), "answer_accuracy": e.get("aggregate_metrics", {}).get("answer_accuracy")} for e in entries]
-    st.dataframe(pd.DataFrame(rows), use_container_width=True)
+    st.dataframe(pd.DataFrame(rows), width="stretch")

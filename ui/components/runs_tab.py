@@ -70,7 +70,7 @@ def render_runs_tab() -> None:
     if status_filter != "all":
         df = df[df["Status"] == status_filter]
 
-    st.dataframe(df, use_container_width=True)
+    st.dataframe(df, width="stretch")
 
     # Detail panel for selected run
     st.subheader("Run actions")
@@ -119,7 +119,7 @@ def render_runs_tab() -> None:
             for c in selected_run.get("configs", [])
         ])
         if not configs_df.empty:
-            st.dataframe(configs_df, use_container_width=True)
+            st.dataframe(configs_df, width="stretch")
 
 
 def _download_report_btn(run_id: str) -> None:

@@ -464,7 +464,7 @@ all 3 tabs functional; `/health` returns 200.
 
 ---
 
-## Phase 11 — Hardening ⚪
+## Phase 11 — Hardening 🟢
 
 **Goal:** Tests green, Docker works from clean clone, docs complete.
 

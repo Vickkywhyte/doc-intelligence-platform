@@ -75,5 +75,11 @@ def configure_logging(
     )
 
     # Suppress chatty third-party libs from flooding the log file.
-    for noisy in ("httpx", "httpcore", "pikepdf", "spacy"):
+    for noisy in ("httpx", "httpcore", "pikepdf", "spacy", "kaleido"):
         logging.getLogger(noisy).setLevel(logging.WARNING)
+
+
+def get_logger(name: str | None = None):
+    """Return a structlog bound logger. Thin wrapper around structlog.get_logger()."""
+    import structlog
+    return structlog.get_logger(name)
