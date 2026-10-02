@@ -1,4 +1,4 @@
-.PHONY: help install check-config corpus ingest test clean clean-cache index query-smoke rag-smoke golden-seed golden-validate golden-rewrite golden-dedupe eval-single test-metrics smoke-eval eval-matrix report eval-matrix-report serve serve-api serve-ui
+.PHONY: help install check-config corpus ingest test clean clean-cache index query-smoke rag-smoke golden-seed golden-validate golden-rewrite golden-dedupe eval-single test-metrics smoke-eval eval-matrix report eval-matrix-report serve serve-api serve-ui api-check
 
 CONFIG ?= configs/experiment_matrix.yaml
 PYTHON  ?= python3.11
@@ -105,3 +105,15 @@ serve-api: ## Start only the FastAPI server on :8000
 
 serve-ui: ## Start only the Streamlit UI on :8501
 	streamlit run ui/app.py --server.port 8501
+
+api-check: ## Verify all 8 routes are registered in FastAPI (uses OpenAPI spec, not r.path)
+	$(PYTHON) -c "\
+import sys; sys.path.insert(0, 'src'); \
+from api.main import app; \
+paths = set(app.openapi()['paths'].keys()); \
+required = {'/health','/ingest','/query','/eval/run','/eval/runs', \
+            '/eval/runs/{run_id}','/eval/runs/{run_id}/report', \
+            '/eval/runs/{run_id}/figures/{name}'}; \
+missing = required - paths; \
+assert not missing, f'Missing routes: {missing}'; \
+print(f'{len(paths)} routes registered: {sorted(paths)}')"
