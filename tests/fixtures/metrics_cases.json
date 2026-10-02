@@ -1,0 +1,148 @@
+{
+  "retrieval": {
+    "perfect_retrieval": {
+      "description": "Gold at rank 1 — best possible single-gold retrieval",
+      "gold": ["c1"],
+      "retrieved": ["c1", "c2", "c3", "c4", "c5"],
+      "expected": {
+        "p_at_1": 1.0,
+        "p_at_3": 0.3333333333333333,
+        "p_at_5": 0.2,
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_1": 1.0,
+        "ndcg_at_3": 1.0,
+        "ndcg_at_5": 1.0
+      }
+    },
+    "gold_at_rank_4": {
+      "description": "Gold at rank 4 — missed by top-3 retrieval",
+      "gold": ["c4"],
+      "retrieved": ["c1", "c2", "c3", "c4", "c5"],
+      "expected": {
+        "p_at_1": 0.0,
+        "p_at_3": 0.0,
+        "p_at_5": 0.2,
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_5": 1.0,
+        "mrr": 0.25,
+        "ndcg_at_1": 0.0,
+        "ndcg_at_3": 0.0,
+        "ndcg_at_5": 0.43067655807339306
+      }
+    },
+    "multi_gold": {
+      "description": "Two gold chunks at ranks 1 and 3",
+      "gold": ["c1", "c3"],
+      "retrieved": ["c1", "c2", "c3", "c4", "c5"],
+      "expected": {
+        "p_at_1": 1.0,
+        "p_at_3": 0.6666666666666666,
+        "p_at_5": 0.4,
+        "recall_at_1": 0.5,
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_1": 1.0,
+        "ndcg_at_3": 0.9197208285395024,
+        "ndcg_at_5": 0.9197208285395024
+      }
+    },
+    "no_gold_retrieved": {
+      "description": "Gold chunk not in top-5 — all zeros",
+      "gold": ["c9"],
+      "retrieved": ["c1", "c2", "c3", "c4", "c5"],
+      "expected": {
+        "p_at_1": 0.0,
+        "p_at_3": 0.0,
+        "p_at_5": 0.0,
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_5": 0.0,
+        "mrr": 0.0,
+        "ndcg_at_1": 0.0,
+        "ndcg_at_3": 0.0,
+        "ndcg_at_5": 0.0
+      }
+    },
+    "unanswerable": {
+      "description": "Empty gold set — all metrics N/A, excluded from aggregates",
+      "gold": [],
+      "retrieved": ["c1", "c2", "c3", "c4", "c5"],
+      "expected": {}
+    }
+  },
+  "hallucination": {
+    "clean": {
+      "description": "Single claim fully supported — rate = 0",
+      "verdicts": ["yes"],
+      "partial_weight": 0.5,
+      "expected_rate": 0.0
+    },
+    "fabricated_number": {
+      "description": "Single claim not supported — rate = 1",
+      "verdicts": ["no"],
+      "partial_weight": 0.5,
+      "expected_rate": 1.0
+    },
+    "partial": {
+      "description": "Single partial verdict with partial_weight=0.5 — rate = 0.5",
+      "verdicts": ["partial"],
+      "partial_weight": 0.5,
+      "expected_rate": 0.5
+    },
+    "two_claims_one_no": {
+      "description": "Two claims: one supported, one not — rate = 0.5",
+      "verdicts": ["yes", "no"],
+      "partial_weight": 0.5,
+      "expected_rate": 0.5
+    },
+    "refusal": {
+      "description": "No claims (refusal or empty) — rate = 0",
+      "verdicts": [],
+      "partial_weight": 0.5,
+      "expected_rate": 0.0
+    },
+    "empty": {
+      "description": "Empty verdict list — rate = 0",
+      "verdicts": [],
+      "partial_weight": 0.5,
+      "expected_rate": 0.0
+    }
+  },
+  "faithfulness": {
+    "paraphrase": {
+      "description": "Single claim, verdict yes — fully faithful",
+      "verdicts": ["yes"],
+      "expected": 1.0
+    },
+    "unsupported_extra": {
+      "description": "Two claims: one yes, one no — half faithful",
+      "verdicts": ["yes", "no"],
+      "expected": 0.5
+    },
+    "partial_counts_supported": {
+      "description": "Partial verdict counts as supported for faithfulness",
+      "verdicts": ["partial"],
+      "expected": 1.0
+    },
+    "all_yes": {
+      "description": "All yes — fully faithful",
+      "verdicts": ["yes", "yes", "yes"],
+      "expected": 1.0
+    },
+    "all_no": {
+      "description": "All no — not faithful",
+      "verdicts": ["no", "no"],
+      "expected": 0.0
+    },
+    "empty": {
+      "description": "No claims — faithfulness 0",
+      "verdicts": [],
+      "expected": 0.0
+    }
+  }
+}

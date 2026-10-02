@@ -1,0 +1,16 @@
+You are grading whether an ANSWER correctly responds to a QUESTION given a
+reference GOLD_ANSWER. Consider meaning, not wording. Ignore style, length,
+and citation format.
+
+Question: {question}
+Gold answer: {gold_answer}
+Generated answer: {answer}
+
+Return ONLY JSON: {{"score": <1-5>, "rationale": "<one sentence>"}}
+
+Score guide:
+1 = wrong or contradicts gold
+2 = mostly wrong but a fragment is right
+3 = partially correct, missing key detail
+4 = correct but with a minor extra or omission
+5 = fully correct, no missing essential info

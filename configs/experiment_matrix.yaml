@@ -1,0 +1,41 @@
+# configs/experiment_matrix.yaml — canonical experiment configuration
+# Model names use OpenRouter's provider/model format for hosted models.
+# Embedding names use the registry key (underscore format).
+
+chunking:
+  - {name: fixed,     size: 512, overlap: 64}
+  - {name: recursive, size: 512, overlap: 64}
+  - {name: semantic,  threshold: 0.75, max_size: 800}
+
+embeddings:
+  - {name: bge_small_en_v15, batch: 64}
+  - {name: minilm_l6_v2,     batch: 64}
+
+retrieval:
+  k: 5
+  mmr: false
+  mmr_lambda: 0.5
+  rerank: false
+
+generation:
+  model: openai/gpt-4o-mini    # OpenRouter model string
+  temperature: 0.0
+  max_tokens: 512
+
+evaluation:
+  judge_model: openai/gpt-4o-mini    # OpenRouter model string
+  judge_prompt_version: v1
+  metrics:
+    - p_at_k
+    - recall_at_k
+    - mrr
+    - ndcg
+    - answer_accuracy
+    - hallucination
+    - faithfulness
+    - refusal_correctness
+  k_values: [1, 3, 5]
+  bootstrap_samples: 1000
+  budget_usd: 5.00
+  seed: 0
+  partial_claim_weight: 0.5

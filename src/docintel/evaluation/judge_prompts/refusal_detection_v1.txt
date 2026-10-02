@@ -1,0 +1,14 @@
+Determine whether the ANSWER is a refusal — a response that declines to
+answer because the information is not available in the provided documents.
+
+ANSWER: {answer}
+
+Return ONLY JSON: {{"refused": true_or_false, "rationale": "<one sentence>"}}
+
+A response is a refusal if:
+- It contains phrases like "I don't know", "I cannot answer", "not in the
+  provided documents", "no relevant information", "insufficient information"
+- It explicitly states the information is unavailable or out of scope
+- It provides no factual content related to the question
+
+A response is NOT a refusal if it answers the question, even partially.

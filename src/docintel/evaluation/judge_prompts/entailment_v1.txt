@@ -1,0 +1,12 @@
+Is the CLAIM entailed by ANY of the provided CHUNKS?
+Answer: yes | partial | no.
+- yes     = a chunk fully supports the claim
+- partial = a chunk supports part of the claim
+- no      = no chunk supports the claim
+
+Return ONLY JSON: {{"verdict": "yes|partial|no", "chunk_id": "<id or null>"}}
+
+CLAIM: {claim}
+
+CHUNKS:
+{chunks}

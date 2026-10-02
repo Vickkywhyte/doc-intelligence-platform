@@ -1,0 +1,68 @@
+# Environment
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+.venv/
+venv/
+*.pth
+
+# Data (large; not version-controlled)
+data/raw/
+data/processed/
+data/chunks/
+data/cache/
+data/indexes/
+# Keep golden set and its README:
+!data/eval/golden.jsonl
+!data/eval/README.md
+
+# Results
+results/runs/
+results/reports/
+results/figures/
+
+# Logs
+logs/app.jsonl*
+logs/cost.jsonl
+
+# Jupyter
+.ipynb_checkpoints/
+notebooks/.ipynb_checkpoints/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# mypy
+.mypy_cache/
+
+# ruff
+.ruff_cache/
+
+results/
+logs/
+
+# data/eval working files (not versioned — regenerable or intermediate)
+data/eval/golden.proposed.jsonl
+data/eval/golden.rewritten.jsonl
+data/eval/golden.deduped.jsonl
+data/eval/golden.jsonl.*

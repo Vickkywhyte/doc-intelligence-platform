@@ -1,0 +1,32 @@
+{
+  "doc_id": "a1b2c3d4e5f6a7b8",
+  "source_path": "data/raw/nda_acme_2024.pdf",
+  "filename": "nda_acme_2024.pdf",
+  "doc_type": "nda",
+  "pages": [
+    {
+      "page_number": 1,
+      "text": "NON-DISCLOSURE AGREEMENT\n\nThis Non-Disclosure Agreement (\"Agreement\") is entered into as of February 1, 2024, between TechCorp Solutions, Inc. (\"Disclosing Party\") and Acme Corporation (\"Receiving Party\"). The parties wish to explore a potential business relationship and, in connection therewith, the Disclosing Party may disclose certain Confidential Information to the Receiving Party.\n\n1. DEFINITION OF CONFIDENTIAL INFORMATION\n\n\"Confidential Information\" means any information disclosed by the Disclosing Party to the Receiving Party, either directly or indirectly, in writing, orally, or by inspection of tangible objects, that is designated as confidential or that reasonably should be understood to be confidential given the nature of the information and circumstances of disclosure. Confidential Information includes, without limitation: business plans, financial data, technical data, software source code, customer lists, marketing plans, product roadmaps, pricing, trade secrets, and any other information of a proprietary nature.",
+      "char_start": 0,
+      "char_end": 1020
+    },
+    {
+      "page_number": 2,
+      "text": "2. OBLIGATIONS OF THE RECEIVING PARTY\n\nThe Receiving Party shall: (a) hold the Confidential Information in strict confidence using no less than reasonable care; (b) not disclose the Confidential Information to any third party without prior written consent from the Disclosing Party; and (c) use the Confidential Information solely for the Purpose. The Receiving Party may disclose Confidential Information to its employees, officers, and advisors who have a need to know for the Purpose, provided that such persons are bound by confidentiality obligations at least as protective as those herein.\n\n3. EXCLUSIONS FROM CONFIDENTIAL INFORMATION\n\nThe obligations of this Agreement do not apply to information that: (a) is or becomes publicly known through no breach of this Agreement by the Receiving Party; (b) is rightfully received by the Receiving Party from a third party without restriction; (c) is independently developed by the Receiving Party without use of or reference to the Confidential Information; or (d) is required to be disclosed by law or court order.",
+      "char_start": 1020,
+      "char_end": 2065
+    },
+    {
+      "page_number": 3,
+      "text": "4. TERM AND TERMINATION\n\nThis Agreement is effective from the date of execution and continues for a period of two (2) years, unless earlier terminated by either party upon thirty (30) days' written notice. The confidentiality obligations survive termination for an additional three (3) years after the expiration or termination of this Agreement.\n\n5. RETURN OR DESTRUCTION OF CONFIDENTIAL INFORMATION\n\nUpon written request by the Disclosing Party, the Receiving Party shall promptly return or destroy all Confidential Information and any copies thereof, and certify in writing that it has done so.\n\n6. REMEDIES\n\nThe Receiving Party acknowledges that any breach of this Agreement may cause irreparable harm to the Disclosing Party for which monetary damages may be inadequate. The Disclosing Party shall be entitled to seek equitable relief, including injunction and specific performance.\n\nIN WITNESS WHEREOF, the parties have executed this Agreement as of the date first written above.\n\nTechCorp Solutions, Inc.\nBy: ________________________\nTitle: Chief Executive Officer\n\nAcme Corporation\nBy: ________________________\nTitle: Chief Legal Officer",
+      "char_start": 2065,
+      "char_end": 3122
+    }
+  ],
+  "metadata": {
+    "file_size_bytes": 45231,
+    "mtime_utc": "2024-02-01T09:00:00+00:00",
+    "extension": ".pdf"
+  },
+  "ingested_at": "2024-02-15T10:30:00+00:00"
+}

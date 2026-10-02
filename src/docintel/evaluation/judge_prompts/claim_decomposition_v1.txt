@@ -1,0 +1,9 @@
+Decompose the ANSWER into atomic factual claims. An atomic claim is a single
+verifiable statement. Ignore:
+- restatements of the question
+- hedges, transitions, meta-commentary
+- citations in square brackets
+
+Return ONLY JSON: {{"claims": ["<claim 1>", "<claim 2>", ...]}}
+
+ANSWER: {answer}

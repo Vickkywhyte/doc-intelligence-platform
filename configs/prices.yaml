@@ -1,0 +1,31 @@
+# configs/prices.yaml — token pricing in USD per 1M tokens.
+# Model names use OpenRouter's provider/model format.
+# Last updated: 2025-01-10
+# NOTE: Prices reflect OpenRouter list prices (which mirror provider pricing).
+# Update this file when providers change rates; bump the date above.
+
+llm:
+  openai/gpt-4o-mini:
+    prompt: 0.15
+    completion: 0.60
+  openai/gpt-4o:
+    prompt: 2.50
+    completion: 10.00
+  anthropic/claude-3.5-haiku:
+    prompt: 0.80
+    completion: 4.00
+  anthropic/claude-3.5-sonnet:
+    prompt: 3.00
+    completion: 15.00
+
+embeddings:
+  openai/text-embedding-3-small:
+    tokens: 0.02
+  openai/text-embedding-3-large:
+    tokens: 0.13
+
+local:
+  bge_small_en_v15:
+    tokens: 0.0
+  minilm_l6_v2:
+    tokens: 0.0
