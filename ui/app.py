@@ -10,7 +10,15 @@ import os
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+# Bootstrap: ensure project root is on sys.path so `ui` and `api` are importable
+# regardless of how this file is launched (streamlit run, make serve, docker).
+_ROOT = Path(__file__).resolve().parent.parent
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
+# Also ensure src/ is on path for docintel package
+_SRC = str(_ROOT / "src")
+if _SRC not in sys.path:
+    sys.path.insert(0, _SRC)
 
 import streamlit as st
 

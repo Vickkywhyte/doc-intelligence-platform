@@ -96,15 +96,15 @@ eval-matrix-report: eval-matrix report ## Run matrix then immediately generate r
 serve: ## Start both FastAPI (:8000) and Streamlit (:8501) in parallel
 	@echo "Starting API on :8000 and UI on :8501 …"
 	@trap 'kill 0' EXIT; \
-	  uvicorn api.main:app --reload --port 8000 & \
-	  streamlit run ui/app.py --server.port 8501 & \
+	  PYTHONPATH=. uvicorn api.main:app --reload --port 8000 & \
+	  PYTHONPATH=. streamlit run ui/app.py --server.port 8501 --server.address 0.0.0.0 & \
 	  wait
 
 serve-api: ## Start only the FastAPI server on :8000
-	uvicorn api.main:app --reload --port 8000
+	PYTHONPATH=. uvicorn api.main:app --reload --port 8000
 
 serve-ui: ## Start only the Streamlit UI on :8501
-	streamlit run ui/app.py --server.port 8501
+	PYTHONPATH=. streamlit run ui/app.py --server.port 8501 --server.address 0.0.0.0
 
 api-check: ## Verify all 8 routes are registered in FastAPI (uses OpenAPI spec, not r.path)
 	$(PYTHON) -c "\

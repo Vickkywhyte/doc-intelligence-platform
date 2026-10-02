@@ -10,7 +10,12 @@ import sys
 from pathlib import Path
 from typing import Any
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+_ROOT = Path(__file__).resolve().parent.parent
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
+_SRC = str(_ROOT / "src")
+if _SRC not in sys.path:
+    sys.path.insert(0, _SRC)
 
 import plotly.graph_objects as go
 
