@@ -105,6 +105,14 @@ Entries are prepended (newest first).
 **Smoke-eval script added**
 - `scripts/09_smoke_eval.py` — real pipeline, 6 items, ~$0.02. PASS/FAIL thresholds: `refusal_correctness >= 0.85`, `hallucination_rate <= 0.15`, `latency_ms_p50 <= 8000`. `make smoke-eval`.
 
+#### 2026-10-02 — Phase 8 complete
+
+- **Deliverables:** `src/docintel/evaluation/{__init__,evaluator,judge,models,stats}.py`; `src/docintel/evaluation/metrics/{__init__,base,retrieval_precision,answer_accuracy,hallucination,faithfulness,refusal}.py`; `src/docintel/evaluation/judge_prompts/{correctness_v1,claim_decomposition_v1,entailment_v1,entailment_v2,refusal_detection_v1}.txt`; `tests/test_metrics.py`; `tests/test_eval_integration.py`; `tests/fixtures/metrics_cases.json`; `scripts/09_smoke_eval.py`; Makefile target `smoke-eval`.
+- **Checkpoint:** `pytest` → 276 tests passing. `make smoke-eval` → all 3 thresholds PASS on 6-question mixed subset (refusal_correctness=1.0, hallucination_rate=0.079, latency_ms_p50=4185). Full 75-question eval on fixed+bge-small → EvalResult written with all 16 aggregate metrics.
+- **Notes:** Before/after on key metrics: refusal_correctness 0.13 → 0.73 (stronger prompt + 9 new refusal phrases + SCORE_FLOOR 0.0 → 0.35); latency_ms_p50 10,045 → 6,412 ms (batched entailment_v2 — 1 judge call per question instead of N claims × M chunks); cost_per_1k_q_usd 2.17 → 0.92; hallucination_rate 0.117 → 0.049. Known gap: refusal_correctness=0.73 is below PRD target 0.90 — 4/15 unanswerable items still answered; deferred to Phase 11 hardening (needs LLM-based refusal detector or stronger prompt tuning).
+- **ADRs added/changed:** none new; ADR-005, ADR-006, ADR-011, ADR-012, ADR-013 validated.
+- **Cost incurred:** ~$0.30 across all smoke + full runs during Phase 8.
+
 ### Phase 9 — Experiment Matrix & Reporting
 *(entry to be added)*
 

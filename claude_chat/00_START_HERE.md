@@ -87,8 +87,9 @@ Read in this sequence. Each document assumes the previous ones.
 | Phase 5 — Vector Store & Retrieval | 🟢 Complete | |
 | Phase 6 — Generation | 🟢 Complete | |
 | Phase 7 — Golden Dataset | 🟢 Complete | 75 entries; 3 quality gaps fixed (fragments, dupes, schema) |
-| Phase 8 — Evaluation Metrics | ⚪ Not started | Phase 8 next |
-| Phases 9–11 | ⚪ Not started | See `04_ROADMAP.md` |
+| Phase 8 — Evaluation Metrics | 🟢 Complete | 276 tests; smoke-eval all 3 thresholds PASS; refusal_correctness 0.73 (gap vs 0.90 deferred to Phase 11) |
+| Phase 9 — Experiment Matrix & Reporting | 🟡 In progress | Phase 9 next |
+| Phases 10–11 | ⚪ Not started | See `04_ROADMAP.md` |
 
 Legend: 🟢 done · 🟡 in progress · ⚪ not started · 🔴 blocked
 

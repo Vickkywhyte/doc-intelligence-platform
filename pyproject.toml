@@ -23,6 +23,8 @@ dependencies = [
     "tiktoken>=0.7",
     "chromadb>=0.5",
     "openai>=1.40",
+    "plotly>=5.20",
+    "kaleido>=0.2",
 ]
 
 [project.optional-dependencies]

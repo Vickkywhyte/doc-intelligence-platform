@@ -326,7 +326,7 @@ make golden-validate
 
 ---
 
-## Phase 8 — Evaluation Metrics ⚪
+## Phase 8 — Evaluation Metrics 🟢
 
 **Goal:** All metrics implemented, unit-tested on hand-crafted cases.
 
@@ -376,7 +376,7 @@ make eval-single
 
 ---
 
-## Phase 9 — Experiment Matrix & Reporting ⚪
+## Phase 9 — Experiment Matrix & Reporting 🟡
 
 **Goal:** One command → 9 configs → comparison report with charts.
 

@@ -83,11 +83,15 @@ test-metrics: ## Run only metric unit tests (fast, no LLM)
 smoke-eval: ## Smoke-test pipeline on 6 golden items (~$0.02, needs real indexes)
 	$(PYTHON) scripts/09_smoke_eval.py --config $(CONFIG)
 
-eval-matrix:
-	@echo "Phase 9: not yet implemented"
+eval-matrix: ## Run full experiment matrix (6 configs) → results/runs/{matrix_id}.json
+	mkdir -p results/runs
+	$(PYTHON) scripts/07_run_eval_matrix.py --config $(CONFIG)
 
-report:
-	@echo "Phase 9: not yet implemented"
+report: ## Generate Markdown + CSV + PNG report from newest matrix result
+	mkdir -p results/reports results/figures
+	$(PYTHON) scripts/08_generate_report.py --output-dir results/
+
+eval-matrix-report: eval-matrix report ## Run matrix then immediately generate report
 
 serve:
 	@echo "Phase 10: not yet implemented"
