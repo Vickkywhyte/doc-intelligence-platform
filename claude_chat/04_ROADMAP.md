@@ -537,3 +537,9 @@ Phase 6 (generation)         Phase 7 (golden dataset) ──┐
 
 **Note:** Phase 7 can run in parallel with Phase 6 if you're blocked on
 LLM API access — the golden set doesn't depend on the pipeline.
+
+---
+
+## Project status — COMPLETE
+
+All 11 phases delivered as of 2026-10-02. 378 tests passing. Pushed to GitHub (private): https://github.com/Vickkywhyte/doc-intelligence-platform. 15 ADRs locked. `docker compose up` works from a clean clone. README contains real matrix results.

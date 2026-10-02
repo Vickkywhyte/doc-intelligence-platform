@@ -94,6 +94,8 @@ Read in this sequence. Each document assumes the previous ones.
 
 Legend: 🟢 done · 🟡 in progress · ⚪ not started · 🔴 blocked
 
+**PROJECT STATUS: ALL 11 PHASES COMPLETE.** The platform was shipped to GitHub (private) on 2026-10-02: https://github.com/Vickkywhyte/doc-intelligence-platform — 378 tests passing, Dockerfile + docker-compose finalized, README with real benchmark results, 15 ADRs locked.
+
 ---
 
 ## Project Definition of Done

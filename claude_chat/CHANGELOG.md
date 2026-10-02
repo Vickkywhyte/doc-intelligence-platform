@@ -158,6 +158,12 @@ Entries are prepended (newest first).
 
 ---
 
+## Project complete — 2026-10-02
+All 11 phases shipped. 378 tests passing. Pushed to GitHub (private): https://github.com/Vickkywhyte/doc-intelligence-platform
+15 ADRs locked. 144 tracked files. Total cost: ~$0.77 across all LLM calls.
+
+---
+
 ## Entry template
 
 ```markdown
