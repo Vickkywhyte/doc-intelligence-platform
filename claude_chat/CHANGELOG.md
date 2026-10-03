@@ -6,6 +6,25 @@ Entries are prepended (newest first).
 
 ---
 
+## Post-launch
+
+### 2026-10-03 — CI green
+
+- **Root cause:** two-layer CI failure.
+  (1) GitHub Actions runner disk exhaustion from unused pre-installed tools
+  (~10 GB of dotnet, Android SDK, GHC, CodeQL).
+  (2) `tests/test_golden_schema.py` assumed `data/chunks/` exists; on CI that
+  directory is a generated artifact and is absent, producing 277 false
+  chunk-ID integrity errors.
+- **Fix:** added a "Free disk space" step to CI that removes unused tool
+  directories before Python setup; added `pytest.skip` guards to the
+  chunk-integrity fixture when `data/chunks/` is missing.
+- **Result:** CI run 37122002901 — success in 6m40s.
+- **Tests:** 378 pass locally; 376 pass + 2 skip in CI.
+- **Repo:** https://github.com/Vickkywhyte/doc-intelligence-platform
+
+---
+
 ## [Unreleased]
 
 ### Planning (Phase 0)

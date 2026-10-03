@@ -1,10 +1,11 @@
 # Document Intelligence Platform
 
-A RAG system over company documents that measures its own quality with a first-class evaluation pipeline comparing chunking strategies and embedding models.
-
+[![CI](https://github.com/Vickkywhyte/doc-intelligence-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/Vickkywhyte/doc-intelligence-platform/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/python-3.11-blue)]()
 [![Tests](https://img.shields.io/badge/tests-378%20passing-brightgreen)]()
 [![License](https://img.shields.io/badge/license-MIT-green)]()
+
+A RAG system over company documents that measures its own quality with a first-class evaluation pipeline comparing chunking strategies and embedding models.
 
 ---
 
