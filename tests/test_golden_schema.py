@@ -167,6 +167,8 @@ def golden_items() -> list[GoldenItem]:
 
 @pytest.fixture(scope="module")
 def known_chunk_ids() -> dict[str, set[str]]:
+    if not CHUNKS_DIR.exists():
+        pytest.skip(f"{CHUNKS_DIR} not found — run `make chunk` first")
     result: dict[str, set[str]] = {}
     for strategy in STRATEGIES:
         result[strategy] = set()
@@ -276,6 +278,8 @@ class TestValidatorScript:
     def test_validate_golden_exits_zero(self):
         if not GOLDEN_PATH.exists():
             pytest.skip(f"{GOLDEN_PATH} not found")
+        if not CHUNKS_DIR.exists():
+            pytest.skip(f"{CHUNKS_DIR} not found — run `make chunk` first")
         result = subprocess.run(
             [sys.executable, "scripts/06_validate_golden.py"],
             capture_output=True,
