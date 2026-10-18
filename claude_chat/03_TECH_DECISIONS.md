@@ -1,9 +1,3 @@
-
----
-
-# 📄 Doc 6 — `03_TECH_DECISIONS.md`
-
-```markdown
 # Architecture Decision Records (ADRs)
 
 **Format:** Context → Decision → Consequences → Alternatives
