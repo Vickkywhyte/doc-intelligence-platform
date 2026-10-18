@@ -1,9 +1,3 @@
-
----
-
-# 📄 Doc 2 — `PROJECT_INSTRUCTIONS.md`
-
-```markdown
 # Project Instructions
 
 > How to work in this repository. Applies to humans and AI assistants alike.
